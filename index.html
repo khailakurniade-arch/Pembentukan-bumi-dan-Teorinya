@@ -22,6 +22,7 @@
         .quiz-opt.selected { border-color: #292524; background: #f5f5f4; font-weight: 600; }
         .quiz-opt.correct { border-color: #22c55e; background: #dcfce7; color: #15803d; }
         .quiz-opt.wrong { border-color: #ef4444; background: #fee2e2; color: #b91c1c; }
+        .diagram-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 80px; min-height: 260px; }
     </style>
 </head>
 <body class="bg-white text-stone-800 h-screen flex overflow-hidden">
@@ -223,7 +224,22 @@ function renderSection(id) {
 
     if(id===4) html = `<div class="max-w-3xl mx-auto">
         <h2 class="text-2xl font-bold mb-4">🌫️ Teori Nebula</h2>
-        <img src="https://images.pexels.com/photos/5632399/pexels-photo-5632399.jpeg?auto=compress&cs=tinysrgb&w=800" class="w-full h-64 object-cover rounded-xl mb-6">
+        <svg class="w-full h-64 rounded-xl mb-6" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <radialGradient id="nebula" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" style="stop-color:#ff6b9d;stop-opacity:0.8" />
+                    <stop offset="50%" style="stop-color:#c44569;stop-opacity:0.6" />
+                    <stop offset="100%" style="stop-color:#1a1a2e;stop-opacity:0.9" />
+                </radialGradient>
+            </defs>
+            <rect width="400" height="300" fill="#0f0f23"/>
+            <circle cx="200" cy="150" r="120" fill="url(#nebula)"/>
+            <circle cx="150" cy="100" r="40" fill="#ff9a56" opacity="0.7"/>
+            <circle cx="250" cy="120" r="35" fill="#ff6b9d" opacity="0.6"/>
+            <circle cx="180" cy="200" r="30" fill="#c44569" opacity="0.5"/>
+            <circle cx="220" cy="190" r="25" fill="#ff9a56" opacity="0.6"/>
+            <text x="200" y="280" text-anchor="middle" fill="#ffffff" font-size="14" font-family="Arial">Nebula (Awan Debu dan Gas)</text>
+        </svg>
         <p class="text-stone-600 mb-4"><strong>Teori Nebula</strong> (Laplace Hypothesis) adalah teori yang paling banyak diterima para ilmuwan untuk menjelaskan pembentukan Bumi dan Tata Surya.</p>
         
         <h4 class="font-bold text-stone-800 mb-3">📖 Penjelasan Teori:</h4>
@@ -250,7 +266,28 @@ function renderSection(id) {
 
     if(id===5) html = `<div class="max-w-3xl mx-auto">
         <h2 class="text-2xl font-bold mb-4">☄️ Teori Planetesimal</h2>
-        <img src="https://images.pexels.com/photos/3652883/pexels-photo-3652883.jpeg?auto=compress&cs=tinysrgb&w=800" class="w-full h-64 object-cover rounded-xl mb-6">
+        <svg class="w-full h-64 rounded-xl mb-6" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <radialGradient id="asteroid1" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" style="stop-color:#a0826d;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#6b5344;stop-opacity:1" />
+                </radialGradient>
+                <radialGradient id="planet" cx="40%" cy="40%" r="60%">
+                    <stop offset="0%" style="stop-color:#4a7c59;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#2d5a3d;stop-opacity:1" />
+                </radialGradient>
+            </defs>
+            <rect width="400" height="300" fill="#0a0e27"/>
+            <circle cx="200" cy="150" r="50" fill="url(#planet)"/>
+            <circle cx="120" cy="80" r="20" fill="url(#asteroid1)"/>
+            <circle cx="280" cy="100" r="18" fill="#9d7659"/>
+            <circle cx="150" cy="220" r="16" fill="#a0826d"/>
+            <circle cx="280" cy="200" r="15" fill="#8b7355"/>
+            <circle cx="100" cy="160" r="12" fill="#6b5344"/>
+            <line x1="120" y1="80" x2="180" y2="120" stroke="#ff6b6b" stroke-width="2" opacity="0.6" stroke-dasharray="5,5"/>
+            <line x1="280" y1="100" x2="230" y2="130" stroke="#ff6b6b" stroke-width="2" opacity="0.6" stroke-dasharray="5,5"/>
+            <text x="200" y="290" text-anchor="middle" fill="#ffffff" font-size="14" font-family="Arial">Planetesimal Berkumpul</text>
+        </svg>
         <p class="text-stone-600 mb-4"><strong>Teori Planetesimal</strong> dikemukakan oleh Moulton dan Chamberlain pada tahun 1904. Teori ini menekankan peran benda-benda kecil dalam pembentukan planet.</p>
         
         <h4 class="font-bold text-stone-800 mb-3">📖 Penjelasan Teori:</h4>
@@ -282,7 +319,26 @@ function renderSection(id) {
 
     if(id===6) html = `<div class="max-w-3xl mx-auto">
         <h2 class="text-2xl font-bold mb-4">🌊 Teori Pasang Surut</h2>
-        <img src="https://images.pexels.com/photos/6657152/pexels-photo-6657152.jpeg?auto=compress&cs=tinysrgb&w=800" class="w-full h-64 object-cover rounded-xl mb-6">
+        <svg class="w-full h-64 rounded-xl mb-6" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <radialGradient id="sun" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#ff8c00;stop-opacity:1" />
+                </radialGradient>
+                <radialGradient id="star" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" style="stop-color:#87ceeb;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#4169e1;stop-opacity:1" />
+                </radialGradient>
+            </defs>
+            <rect width="400" height="300" fill="#000814"/>
+            <circle cx="100" cy="150" r="40" fill="url(#sun)"/>
+            <circle cx="300" cy="150" r="35" fill="url(#star)"/>
+            <path d="M 140 100 Q 170 60, 200 80 Q 230 100, 260 120" stroke="#ff6b9d" stroke-width="3" fill="none" opacity="0.8"/>
+            <path d="M 140 200 Q 170 240, 200 220 Q 230 200, 260 180" stroke="#ff6b9d" stroke-width="3" fill="none" opacity="0.8"/>
+            <text x="100" y="210" text-anchor="middle" fill="#ffd700" font-size="12" font-family="Arial">Matahari</text>
+            <text x="300" y="210" text-anchor="middle" fill="#87ceeb" font-size="12" font-family="Arial">Bintang Lain</text>
+            <text x="200" y="290" text-anchor="middle" fill="#ffffff" font-size="14" font-family="Arial">Gaya Pasang Surut Menarik Material</text>
+        </svg>
         <p class="text-stone-600 mb-4"><strong>Teori Pasang Surut</strong> (Tidal Theory) dikemukakan oleh Sir James Jeans dan Harold Jeffreys. Teori ini menghubungkan pembentukan planet dengan gaya gravitasi bintang lain.</p>
         
         <h4 class="font-bold text-stone-800 mb-3">📖 Penjelasan Teori:</h4>
@@ -328,7 +384,31 @@ function renderSection(id) {
 
     if(id===7) html = `<div class="max-w-3xl mx-auto">
         <h2 class="text-2xl font-bold mb-4">⭐ Teori Bintang Kembar</h2>
-        <img src="https://images.pexels.com/photos/11035380/pexels-photo-11035380.jpeg?auto=compress&cs=tinysrgb&w=800" class="w-full h-64 object-cover rounded-xl mb-6">
+        <svg class="w-full h-64 rounded-xl mb-6" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <radialGradient id="star1" cx="40%" cy="40%">
+                    <stop offset="0%" style="stop-color:#ffeb3b;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#ff6f00;stop-opacity:1" />
+                </radialGradient>
+                <radialGradient id="star2" cx="40%" cy="40%">
+                    <stop offset="0%" style="stop-color:#64b5f6;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#1565c0;stop-opacity:1" />
+                </radialGradient>
+            </defs>
+            <rect width="400" height="300" fill="#0a0e27"/>
+            <circle cx="120" cy="150" r="45" fill="url(#star1)"/>
+            <circle cx="280" cy="150" r="40" fill="url(#star2)"/>
+            <circle cx="200" cy="150" r="3" fill="#ffffff"/>
+            <path d="M 120 150 Q 200 100, 280 150" stroke="#ff6b9d" stroke-width="2" fill="none" opacity="0.6" stroke-dasharray="5,5"/>
+            <path d="M 120 150 Q 200 200, 280 150" stroke="#ff6b9d" stroke-width="2" fill="none" opacity="0.6" stroke-dasharray="5,5"/>
+            <circle cx="160" cy="100" r="8" fill="#4dd0e1" opacity="0.7"/>
+            <circle cx="240" cy="100" r="7" fill="#ffa726" opacity="0.7"/>
+            <circle cx="170" cy="200" r="6" fill="#4dd0e1" opacity="0.7"/>
+            <circle cx="230" cy="200" r="7" fill="#ffa726" opacity="0.7"/>
+            <text x="120" y="220" text-anchor="middle" fill="#ffeb3b" font-size="12" font-family="Arial">Bintang 1</text>
+            <text x="280" y="220" text-anchor="middle" fill="#64b5f6" font-size="12" font-family="Arial">Bintang 2</text>
+            <text x="200" y="290" text-anchor="middle" fill="#ffffff" font-size="14" font-family="Arial">Bintang Kembar Saling Mengorbit</text>
+        </svg>
         <p class="text-stone-600 mb-4"><strong>Teori Bintang Kembar</strong> (Binary Star Theory) adalah pengembangan dari teori pasang surut yang dikemukakan untuk menjelaskan pembentukan Tata Surya dengan lebih baik.</p>
         
         <h4 class="font-bold text-stone-800 mb-3">📖 Penjelasan Teori:</h4>
