@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembelajaran Pembentukan Bumi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'DM Sans', sans-serif; }
+        .nav-link { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; color: #57534e; font-weight: 500; cursor: pointer; transition: all 0.2s; margin-bottom: 4px; }
+        .nav-link:hover { background-color: #f5f5f4; }
+        .nav-link.active { background-color: #e7e5e4; color: #1c1917; font-weight: 600; }
+        .page-section { display: none; }
+        .page-section.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card-click { border: 1px solid #e7e5e4; border-radius: 12px; overflow: hidden; transition: all 0.2s; cursor: pointer; }
+        .card-click:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        .quiz-opt { border: 1px solid #d6d3d1; background: white; padding: 12px 16px; border-radius: 8px; cursor: pointer; transition: 0.2s; margin-bottom: 10px; }
+        .quiz-opt:hover { border-color: #a8a29e; }
+        .quiz-opt.selected { border-color: #292524; background: #f5f5f4; font-weight: 600; }
+        .quiz-opt.correct { border-color: #22c55e; background: #dcfce7; color: #15803d; }
+        .quiz-opt.wrong { border-color: #ef4444; background: #fee2e2; color: #b91c1c; }
+    </style>
+</head>
+<body class="bg-white text-stone-800 h-screen flex overflow-hidden">
+
+<aside class="w-64 bg-stone-50 border-r border-stone-200 flex flex-col shrink-0">
+    <div class="p-5 border-b border-stone-200">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white"><i data-lucide="globe" class="w-6 h-6"></i></div>
+            <div><h1 class="font-bold text-lg text-stone-900">Pembentukan Bumi</h1><p class="text-xs text-stone-500">Modul Pembelajaran</p></div>
+        </div>
+    </div>
+    <nav class="flex-1 overflow-y-auto p-3" id="nav-menu"></nav>
+    <div class="p-4 border-t border-stone-200 bg-white">
+        <div class="flex justify-between text-sm font-medium mb-2"><span>Progres Kelas</span><span id="progress-text">0%</span></div>
+        <div class="w-full bg-stone-100 rounded-full h-2.5"><div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div></div>
+    </div>
+</aside>
+
+<main class="flex-1 flex flex-col overflow-hidden">
+    <header class="relative h-56 shrink-0">
+        <img src="https://images.pexels.com/photos/956981/milky-way-starry-sky-night-sky-star-956981.jpeg?auto=compress&cs=tinysrgb&w=1280" class="w-full h-full object-cover" alt="Space">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 right-0 p-8">
+            <h1 class="text-4xl font-bold text-white drop-shadow-sm">PEMBENTUKAN BUMI & TEORINYA</h1>
+            <p class="text-stone-200 mt-2 text-lg">Belajar seru tentang asal mula planet kita 🚀</p>
+        </div>
+    </header>
+    <div class="flex-1 overflow-y-auto p-8" id="main-content"></div>
+</main>
+
+<aside class="w-72 border-l border-stone-200 bg-stone-50 p-5 shrink-0 hidden lg:block overflow-y-auto">
+    <h3 class="font-bold text-stone-800 mb-4">📋 Materi Tersedia</h3>
+    <div class="space-y-2 mb-6" id="pipeline-list"></div>
+    <div class="border-t border-stone-200 pt-4"><h3 class="font-bold text-stone-800 mb-3">📊 Status Pembelajaran</h3>
+    <div class="space-y-2" id="status-list"></div></div>
+    <div class="mt-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
+        <div class="flex items-center gap-2 mb-2"><span class="text-lg">💡</span><h4 class="font-bold text-amber-800 text-sm">Fakta Menarik</h4></div>
+        <p class="text-xs text-amber-700 leading-relaxed" id="fun-fact">Bumi terbentuk sekitar 4,6 MILIAR tahun yang lalu dari awan debu dan gas!</p>
+    </div>
+</aside>
+
+<script>
+const topics = [
+    {id:0, title:'Selamat Datang', icon:'home'},
+    {id:1, title:'Tujuan Pembelajaran', icon:'target'},
+    {id:2, title:'Apa Itu Bumi?', icon:'globe'},
+    {id:3, title:'Proses Pembentukan', icon:'layers'},
+    {id:4, title:'Teori Nebula', icon:'cloud'},
+    {id:5, title:'Teori Planetesimal', icon:'rocket'},
+    {id:6, title:'Teori Pasang Surut', icon:'waves'},
+    {id:7, title:'Teori Bintang Kembar', icon:'star'},
+    {id:8, title:'Quiz', icon:'help-circle'},
+    {id:9, title:'Penutup', icon:'trophy'}
+];
+
+let currentSection = 0;
+let visited = new Set([0]);
+let quizAnswers = {};
+let quizScore = 0;
+
+const funFacts = [
+    "Bumi terbentuk sekitar 4,6 MILIAR tahun yang lalu dari awan debu dan gas!",
+    "Usia Bumi sama dengan Matahari, yaitu sekitar 4,6 miliar tahun.",
+    "Teori Nebula adalah teori paling diterima untuk menjelaskan asal Bumi.",
+    "Bumi berputar pada sumbunya satu kali dalam 24 jam.",
+    "70% permukaan Bumi ditutupi air.",
+    "Bumi memiliki satelit alami yang disebut Bulan.",
+    "Lapisan Bumi terdiri dari kerak, mantel, dan inti.",
+    "Bumi adalah satu-satunya planet yang diketahui memiliki kehidupan."
+];
+
+function goToSection(id) {
+    currentSection = id;
+    visited.add(id);
+    renderNav();
+    renderSection(id);
+    updateProgress();
+    updatePipeline();
+    updateStatus();
+}
+
+function renderNav() {
+    const navMenu = document.getElementById('nav-menu');
+    navMenu.innerHTML = '';
+    topics.forEach((topic, index) => {
+        const item = document.createElement('div');
+        item.className = `nav-link ${index === currentSection ? 'active' : ''}`;
+        item.onclick = () => goToSection(index);
+        item.innerHTML = `<i data-lucide="${topic.icon}" style="width:18px;height:18px"></i><span>${topic.title}</span>`;
+        navMenu.appendChild(item);
+    });
+    lucide.createIcons();
+}
+
+function updateProgress() {
+    const progress = Math.round((visited.size / topics.length) * 100);
+    document.getElementById('progress-text').textContent = progress + '%';
+    document.getElementById('progress-bar').style.width = progress + '%';
+}
+
+function updatePipeline() {
+    const pipelineList = document.getElementById('pipeline-list');
+    pipelineList.innerHTML = '';
+    topics.forEach((topic, index) => {
+        if (index !== 8 && index !== 9) {
+            const item = document.createElement('div');
+            item.className = `text-xs p-2 rounded cursor-pointer transition ${visited.has(index) ? 'bg-blue-100 text-blue-700 font-medium' : 'bg-stone-100 text-stone-600'}`;
+            item.textContent = `${index + 1}. ${topic.title}`;
+            item.onclick = () => goToSection(index);
+            pipelineList.appendChild(item);
+        }
+    });
+}
+
+function updateStatus() {
+    const statusList = document.getElementById('status-list');
+    statusList.innerHTML = '';
+    const completedCount = visited.size - 1;
+    const statuses = [
+        { label: 'Selesai', value: completedCount, icon: '✓', color: 'green' },
+        { label: 'Sisa', value: topics.length - visited.size, icon: '→', color: 'amber' }
+    ];
+    statuses.forEach(s => {
+        const item = document.createElement('div');
+        item.className = `text-xs p-2 rounded bg-${s.color}-100 text-${s.color}-700`;
+        item.innerHTML = `<div class="font-bold">${s.value} ${s.label}</div>`;
+        statusList.appendChild(item);
+    });
+}
+
+function renderSection(id) {
+    const c = document.getElementById('main-content');
+    const randomFact = funFacts[Math.floor(Math.random() * funFacts.length)];
+    document.getElementById('fun-fact').textContent = randomFact;
+    
+    let html = '';
+    
+    if(id===0) html = `<div class="max-w-3xl mx-auto">
+        <div class="flex items-center gap-5 mb-8">
+            <img src="https://images.pexels.com/photos/87651/earth-blue-planet-globe-planet-87651.jpeg?auto=compress&cs=tinysrgb&w=200" class="w-20 h-20 rounded-full object-cover shadow-lg border-4 border-white">
+            <div><h2 class="text-3xl font-bold text-stone-900">Selamat Datang!</h2><p class="text-stone-500 mt-1">Mari belajar tentang asal mula planet Bumi 🚀</p></div>
+        </div>
+        <div class="bg-stone-50 p-6 rounded-xl border border-stone-200 mb-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div><p class="text-xs text-stone-400 uppercase font-bold">Kategori</p><p class="font-semibold">Geografi</p></div>
+                <div><p class="text-xs text-stone-400 uppercase font-bold">Progres</p><p class="font-semibold" id="prop-progress">0%</p></div>
+                <div><p class="text-xs text-stone-400 uppercase font-bold">Total Modul</p><p class="font-semibold">10 Modul</p></div>
+                <div><p class="text-xs text-stone-400 uppercase font-bold">Tingkat</p><p class="font-semibold">SD Kelas 5-6</p></div>
+            </div>
+        </div>
+        <h3 class="font-bold text-xl mb-4">📂 Materi Pembelajaran</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+            <div class="card-click p-4 bg-white" onclick="goToSection(2)"><div class="flex items-center justify-between mb-2"><span class="text-2xl">🌍</span><span class="text-xs bg-stone-100 px-2 py-1 rounded">Modul 1</span></div><p class="font-semibold text-stone-800">Apa Itu Bumi?</p></div>
+            <div class="card-click p-4 bg-white" onclick="goToSection(3)"><div class="flex items-center justify-between mb-2"><span class="text-2xl">🔥</span><span class="text-xs bg-stone-100 px-2 py-1 rounded">Modul 2</span></div><p class="font-semibold text-stone-800">Proses Pembentukan</p></div>
+            <div class="card-click p-4 bg-white" onclick="goToSection(4)"><div class="flex items-center justify-between mb-2"><span class="text-2xl">🌫️</span><span class="text-xs bg-stone-100 px-2 py-1 rounded">Modul 3</span></div><p class="font-semibold text-stone-800">Teori Nebula</p></div>
+            <div class="card-click p-4 bg-white" onclick="goToSection(5)"><div class="flex items-center justify-between mb-2"><span class="text-2xl">☄️</span><span class="text-xs bg-stone-100 px-2 py-1 rounded">Modul 4</span></div><p class="font-semibold text-stone-800">Teori Planetesimal</p></div>
+        </div>
+        <button onclick="goToSection(1)" class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition">Mulai Belajar →</button>
+    </div>`;
+
+    if(id===1) html = `<div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-bold mb-6">🎯 Tujuan Pembelajaran</h2>
+        <div class="space-y-4 mb-8">
+            <div class="bg-blue-50 p-5 rounded-lg border-l-4 border-blue-500 flex items-center gap-4"><span class="text-2xl">🎯</span><div><p class="font-semibold text-stone-800 mb-1">Memahami Proses</p><p class="text-sm text-stone-600">Memahami proses terbentuknya bumi dari awan gas dan debu kosmis.</p></div></div>
+            <div class="bg-green-50 p-5 rounded-lg border-l-4 border-green-500 flex items-center gap-4"><span class="text-2xl">📚</span><div><p class="font-semibold text-stone-800 mb-1">Mengenal Teori</p><p class="text-sm text-stone-600">Mengenal serta membedakan 4 teori pembentukan bumi yang terkenal.</p></div></div>
+            <div class="bg-purple-50 p-5 rounded-lg border-l-4 border-purple-500 flex items-center gap-4"><span class="text-2xl">💡</span><div><p class="font-semibold text-stone-800 mb-1">Kesimpulan Penting</p><p class="text-sm text-stone-600">Menyimpulkan pentingnya bumi sebagai rumah bagi makhluk hidup.</p></div></div>
+        </div>
+        <div class="flex justify-between"><button onclick="goToSection(0)" class="px-4 py-2 border border-stone-300 rounded-lg hover:bg-stone-50">← Sebelumnya</button><button onclick="goToSection(2)" class="px-4 py-2 bg-stone-900 text-white rounded-lg hover:bg-stone-700">Lanjut ke Materi →</button></div>
+    </div>`;
+
+    if(id===2) html = `<div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-bold mb-4">🌍 Apa Itu Bumi?</h2>
+        <img src="https://images.pexels.com/photos/9544066/pexels-photo-9544066.jpeg?auto=compress&cs=tinysrgb&w=800" class="w-full h-64 object-cover rounded-xl mb-6">
+        <p class="text-lg leading-relaxed text-stone-700 mb-6">Bumi adalah <strong>planet ketiga</strong> dari Matahari dan satu-satunya planet yang diketahui memiliki kehidupan. Bumi memiliki air, udara, dan tanah yang menjadi tempat tinggal manusia, hewan, dan tumbuhan.</p>
+        <div class="bg-blue-50 p-4 rounded-lg mb-6"><h4 class="font-bold text-blue-800 mb-3">📌 Fakta Bumi:</h4><ul class="list-disc pl-5 text-blue-700 space-y-2"><li>Jarak dari Matahari: 150 juta km</li><li>70% permukaan bumi adalah air</li><li>Memiliki atmosfer yang kaya oksigen</li><li>Berputar pada porosnya setiap 24 jam</li><li>Memiliki 1 satelit alami (Bulan)</li></ul></div>
+        <h4 class="font-bold text-stone-800 mb-3">🌍 Lapisan Bumi:</h4>
+        <div class="grid grid-cols-1 gap-3 mb-6">
+            <div class="bg-yellow-50 p-3 rounded border-l-4 border-yellow-500"><p class="font-semibold text-yellow-800">Kerak Bumi</p><p class="text-sm text-yellow-700">Lapisan paling luar yang padat</p></div>
+            <div class="bg-orange-50 p-3 rounded border-l-4 border-orange-500"><p class="font-semibold text-orange-800">Mantel</p><p class="text-sm text-orange-700">Lapisan panas berbentuk magma</p></div>
+            <div class="bg-red-50 p-3 rounded border-l-4 border-red-500"><p class="font-semibold text-red-800">Inti</p><p class="text-sm text-red-700">Pusat Bumi yang sangat panas</p></div>
+        </div>
+        <div class="flex justify-between"><button onclick="goToSection(1)" class="px-4 py-2 border border-stone-300 rounded-lg hover:bg-stone-50">← Sebelumnya</button><button onclick="goToSection(3)" class="px-4 py-2 bg-stone-900 text-white rounded-lg hover:bg-stone-700">Lanjut →</button></div>
+    </div>`;
+
+    if(id===3) html = `<div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-bold mb-6">🔥 Proses Pembentukan Bumi</h2>
+        <p class="text-stone-600 mb-6">Bumi terbentuk melalui proses yang panjang dan kompleks. Berikut adalah tahapan-tahapannya:</p>
+        <div class="space-y-4 mb-8">
+            <div class="flex items-start gap-4 p-4 bg-blue-50 rounded-lg"><div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold shrink-0 text-sm">1</div><div><h4 class="font-bold text-stone-800">Awal Mula (Nebula)</h4><p class="text-sm text-stone-600">Sekitar 4,6 miliar tahun lalu, terdapat awan debu dan gas raksasa di luar angkasa yang disebut nebula.</p></div></div>
+            <div class="flex items-start gap-4 p-4 bg-green-50 rounded-lg"><div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold shrink-0 text-sm">2</div><div><h4 class="font-bold text-stone-800">Pemadatan & Rotasi</h4><p class="text-sm text-stone-600">Awan debu berputar dan mulai menggumpal karena gaya gravitasi dari pusat nebula.</p></div></div>
+            <div class="flex items-start gap-4 p-4 bg-yellow-50 rounded-lg"><div class="w-8 h-8 bg-yellow-500 text-white rounded-full flex items-center justify-center font-bold shrink-0 text-sm">3</div><div><h4 class="font-bold text-stone-800">Bola Api Raksasa</h4><p class="text-sm text-stone-600">Gumpalan semakin besar dan panas, membentuk bola api raksasa (protoplanet).</p></div></div>
+            <div class="flex items-start gap-4 p-4 bg-purple-50 rounded-lg"><div class="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold shrink-0 text-sm">4</div><div><h4 class="font-bold text-stone-800">Pendinginan Bertahap</h4><p class="text-sm text-stone-600">Perlahan mendingin membentuk kerak bumi yang padat dan berbagai lapisan planet.</p></div></div>
+        </div>
+        <div class="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-6">
+            <p class="text-sm text-amber-800"><strong>💡 Catatan:</strong> Usia Bumi yang kita ketahui saat ini adalah berdasarkan penelitian radiometrik pada batuan tertua di Bumi.</p>
+        </div>
+        <div class="flex justify-between"><button onclick="goToSection(2)" class="px-4 py-2 border border-stone-300 rounded-lg hover:bg-stone-50">← Sebelumnya</button><button onclick="goToSection(4)" class="px-4 py-2 bg-stone-900 text-white rounded-lg hover:bg-stone-700">Teori Nebula →</button></div>
+    </div>`;
+
+    if(id===4) html = `<div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-bold mb-4">🌫️ Teori Nebula</h2>
+        <img src="https://images.pexels.com/photos/5632399/pexels-photo-5632399.jpeg?auto=compress&cs=tinysrgb&w=800" class="w-full h-64 object-cover rounded-xl mb-6">
+        <p class="text-stone-600 mb-4"><strong>Teori Nebula</strong> (Laplace Hypothesis) adalah teori yang paling banyak diterima para ilmuwan untuk menjelaskan pembentukan Bumi dan Tata Surya.</p>
+        
+        <h4 class="font-bold text-stone-800 mb-3">📖 Penjelasan Teori:</h4>
+        <div class="bg-stone-50 p-4 rounded-lg mb-6">
+            <p class="text-stone-700 leading-relaxed">Menurut teori ini, Tata Surya berasal dari nebula (awan debu dan gas) yang berputar dengan cepat. Karena adanya gravitasi, nebula ini mengalami kontraksi dan rotasi semakin cepat. Bagian tepi nebula yang bergerak cepat terlepas dan membentuk cincin-cincin gas. Cincin-cincin ini kemudian mengumpul dan membentuk planet-planet.</p>
+        </div>
+
+        <h4 class="font-bold text-stone-800 mb-3">✅ Kelebihan Teori Nebula:</h4>
+        <ul class="list-disc pl-5 text-stone-700 space-y-2 mb-6">
+            <li>Dapat menjelaskan asal Matahari dan semua planet</li>
+            <li>Konsisten dengan hukum fisika (gravitasi dan rotasi)</li>
+            <li>Didukung oleh pengamatan astronomi modern</li>
+            <li>Menjelaskan mengapa planet mengorbit pada bidang yang sama</li>
+        </ul>
+
+        <h4 class="font-bold text-stone-800 mb-3">❌ Kelemahan Teori Nebula:</h4>
+        <ul class="list-disc pl-5 text-stone-700 space-y-2 mb-6">
+            <li>Kesulitan menjelaskan momentum sudut Tata Surya</li>
+            <li>Tidak dapat menjelaskan ukuran planet yang bervariasi</li>
+        </ul>
+
+        <div class="flex justify-between"><button onclick="goToSection(3)" class="px-4 py-2 border border-stone-300 rounded-lg hover:bg-stone-50">← Sebelumnya</button><button onclick="goToSection(5)" class="px-4 py-2 bg-stone-900 text-white rounded-lg hover:bg-stone-700">Teori Planetesimal →</button></div>
+    </div>`;
+
+    if(id===5) html = `<div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-bold mb-4">☄️ Teori Planetesimal</h2>
+        <img src="https://images.pexels.com/photos/5632404/pexels-photo-5632404.jpeg?auto=compress&cs=tinysrgb&w=800" class="w-full h-64 object-cover rounded-xl mb-6">
+        <p class="text-stone-600 mb-4"><strong>Teori Planetesimal</strong> dikemukakan oleh Moulton dan Chamberlain pada tahun 1904. Teori ini menekankan peran benda-benda kecil dalam pembentukan planet.</p>
+        
+        <h4 class="font-bold text-stone-800 mb-3">📖 Penjelasan Teori:</h4>
+        <div class="bg-stone-50 p-4 rounded-lg mb-6">
+            <p class="text-stone-700 leading-relaxed">Menurut teori ini, planet terbentuk dari penggabungan jutaan planetesimal (benda-benda kecil berukuran kilometer). Planetesimal ini saling tabrakan dan bergabung membentuk benda yang lebih besar. Proses ini terus berlanjut hingga terbentuk planet-planet seperti sekarang.</p>
+        </div>
+
+        <h4 class="font-bold text-stone-800 mb-3">📍 Proses Pembentukan:</h4>
+        <div class="grid grid-cols-1 gap-3 mb-6">
+            <div class="bg-blue-50 p-3 rounded border-l-4 border-blue-500"><p class="font-semibold text-blue-800">Tahap 1: Akresi</p><p class="text-sm text-blue-700">Planetesimal kecil bergabung menjadi benda yang lebih besar</p></div>
+            <div class="bg-green-50 p-3 rounded border-l-4 border-green-500"><p class="font-semibold text-green-800">Tahap 2: Akumulasi</p><p class="text-sm text-green-700">Terus terjadi penggabungan hingga terbentuk protoplanet</p></div>
+            <div class="bg-purple-50 p-3 rounded border-l-4 border-purple-500"><p class="font-semibold text-purple-800">Tahap 3: Planet Matang</p><p class="text-sm text-purple-700">Terbentuk planet dengan massa dan orbit yang stabil</p></div>
+        </div>
+
+        <h4 class="font-bold text-stone-800 mb-3">✅ Kelebihan:</h4>
+        <ul class="list-disc pl-5 text-stone-700 space-y-1 mb-4">
+            <li>Menjelaskan keberadaan meteorit di Tata Surya</li>
+            <li>Konsisten dengan pengamatan planet berbeda ukuran</li>
+        </ul>
+
+        <h4 class="font-bold text-stone-800 mb-3">❌ Kelemahan:</h4>
+        <ul class="list-disc pl-5 text-stone-700 space-y-1 mb-6">
+            <li>Tidak menjelaskan asal planetesimal</li>
+            <li>Kesulitan menjelaskan kecepatan pembentukan planet</li>
+        </ul>
+
+        <div class="flex justify-between"><button onclick="goToSection(4)" class="px-4 py-2 border border-stone-300 rounded-lg hover:bg-stone-50">← Sebelumnya</button><button onclick="goToSection(6)" class="px-4 py-2 bg-stone-900 text-white rounded-lg hover:bg-stone-700">Teori Pasang Surut →</button></div>
+    </div>`;
+
+    if(id===6) html = `<div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-bold mb-4">🌊 Teori Pasang Surut</h2>
+        <img src="https://images.pexels.com/photos/6657152/pexels-photo-6657152.jpeg?auto=compress&cs=tinysrgb&w=800" class="w-full h-64 object-cover rounded-xl mb-6">
+        <p class="text-stone-600 mb-4"><strong>Teori Pasang Surut</strong> (Tidal Theory) dikemukakan oleh Sir James Jeans dan Harold Jeffreys. Teori ini menghubungkan pembentukan planet dengan gaya gravitasi bintang lain.</p>
+        
+        <h4 class="font-bold text-stone-800 mb-3">📖 Penjelasan Teori:</h4>
+        <div class="bg-stone-50 p-4 rounded-lg mb-6">
+            <p class="text-stone-700 leading-relaxed">Menurut teori ini, pada awal terbentuknya Tata Surya, ada sebuah bintang lain yang melewati dekat Matahari. Tarikan gravitasi bintang ini menyebabkan material Matahari tertarik keluar membentuk aliran gas yang panjang (seperti pasang surut). Aliran gas ini kemudian memisah dan membentuk planet-planet.</p>
+        </div>
+
+        <h4 class="font-bold text-stone-800 mb-3">⭐ Proses Pembentukan:</h4>
+        <div class="space-y-3 mb-6">
+            <div class="flex items-start gap-3 p-3 bg-amber-50 rounded border-l-4 border-amber-500">
+                <span class="text-lg">1️⃣</span>
+                <div><p class="font-semibold text-amber-800">Pendekatan Bintang</p><p class="text-sm text-amber-700">Bintang lain mendekati Matahari</p></div>
+            </div>
+            <div class="flex items-start gap-3 p-3 bg-orange-50 rounded border-l-4 border-orange-500">
+                <span class="text-lg">2️⃣</span>
+                <div><p class="font-semibold text-orange-800">Gaya Pasang Surut</p><p class="text-sm text-orange-700">Gravitasi bintang menarik material Matahari</p></div>
+            </div>
+            <div class="flex items-start gap-3 p-3 bg-red-50 rounded border-l-4 border-red-500">
+                <span class="text-lg">3️⃣</span>
+                <div><p class="font-semibold text-red-800">Pemisahan Material</p><p class="text-sm text-red-700">Material terlepas membentuk aliran panjang</p></div>
+            </div>
+            <div class="flex items-start gap-3 p-3 bg-pink-50 rounded border-l-4 border-pink-500">
+                <span class="text-lg">4️⃣</span>
+                <div><p class="font-semibold text-pink-800">Pembentukan Planet</p><p class="text-sm text-pink-700">Aliran gas memisah dan membentuk planet</p></div>
+            </div>
+        </div>
+
+        <h4 class="font-bold text-stone-800 mb-3">✅ Kelebihan:</h4>
+        <ul class="list-disc pl-5 text-stone-700 space-y-1 mb-4">
+            <li>Konsisten dengan observasi jarak planet dari Matahari</li>
+            <li>Menjelaskan momentum sudut Tata Surya</li>
+        </ul>
+
+        <h4 class="font-bold text-stone-800 mb-3">❌ Kelemahan:</h4>
+        <ul class="list-disc pl-5 text-stone-700 space-y-1 mb-6">
+            <li>Kemungkinan bintang lain melewati dekat Matahari sangat kecil</li>
+            <li>Sulit menjelaskan stabilitas orbit planet</li>
+            <li>Material yang terlepas seharusnya kembali ke Matahari</li>
+        </ul>
+
+        <div class="flex justify-between"><button onclick="goToSection(5)" class="px-4 py-2 border border-stone-300 rounded-lg hover:bg-stone-50">← Sebelumnya</button><button onclick="goToSection(7)" class="px-4 py-2 bg-stone-900 text-white rounded-lg hover:bg-stone-700">Teori Bintang Kembar →</button></div>
+    </div>`;
+
+    if(id===7) html = `<div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-bold mb-4">⭐ Teori Bintang Kembar</h2>
+        <img src="https://images.pexels.com/photos/11035380/pexels-photo-11035380.jpeg?auto=compress&cs=tinysrgb&w=800" class="w-full h-64 object-cover rounded-xl mb-6">
+        <p class="text-stone-600 mb-4"><strong>Teori Bintang Kembar</strong> (Binary Star Theory) adalah pengembangan dari teori pasang surut yang dikemukakan untuk menjelaskan pembentukan Tata Surya dengan lebih baik.</p>
+        
+        <h4 class="font-bold text-stone-800 mb-3">📖 Penjelasan Teori:</h4>
+        <div class="bg-stone-50 p-4 rounded-lg mb-6">
+            <p class="text-stone-700 leading-relaxed">Menurut teori ini, Matahari dan bintang lain pada awalnya adalah bintang kembar (binary star) yang saling mengorbit. Interaksi gravitasi antara kedua bintang ini menyebabkan material tertarik keluar membentuk struktur spiral. Ketika kedua bintang berpisah, material yang tertarik membentuk planet-planet.</p>
+        </div>
+
+        <h4 class="font-bold text-stone-800 mb-3">🌟 Perbedaan dengan Teori Pasang Surut:</h4>
+        <div class="grid grid-cols-1 gap-3 mb-6">
+            <div class="bg-blue-50 p-4 rounded border-l-4 border-blue-500">
+                <p class="font-semibold text-blue-800 mb-1">Teori Pasang Surut</p>
+                <p class="text-sm text-blue-700">Bintang hanya melewati dekat Matahari (sekali saja)</p>
+            </div>
+            <div class="bg-green-50 p-4 rounded border-l-4 border-green-500">
+                <p class="font-semibold text-green-800 mb-1">Teori Bintang Kembar</p>
+                <p class="text-sm text-green-700">Bintang saling mengorbit dalam waktu lama (berulang)</p>
+            </div>
+        </div>
+
+        <h4 class="font-bold text-stone-800 mb-3">⭐ Proses Pembentukan:</h4>
+        <div class="space-y-3 mb-6">
+            <div class="flex items-start gap-3 p-3 bg-yellow-50 rounded border-l-4 border-yellow-500">
+                <span class="text-lg">⭐⭐</span>
+                <div><p class="font-semibold text-yellow-800">Bintang Kembar Terbentuk</p><p class="text-sm text-yellow-700">Dua bintang yang sama-sama terbentuk dari nebula</p></div>
+            </div>
+            <div class="flex items-start gap-3 p-3 bg-purple-50 rounded border-l-4 border-purple-500">
+                <span class="text-lg">🔄</span>
+                <div><p class="font-semibold text-purple-800">Saling Mengorbit</p><p class="text-sm text-purple-700">Kedua bintang mengorbit dengan pusat gravitasi bersama</p></div>
+            </div>
+            <div class="flex items-start gap-3 p-3 bg-indigo-50 rounded border-l-4 border-indigo-500">
+                <span class="text-lg">💫</span>
+                <div><p class="font-semibold text-indigo-800">Tarikan Material</p><p class="text-sm text-indigo-700">Gaya gravitasi menarik material membentuk struktur spiral</p></div>
+            </div>
+            <div class="flex items-start gap-3 p-3 bg-pink-50 rounded border-l-4 border-pink-500">
+                <span class="text-lg">🌍</span>
+                <div><p class="font-semibold text-pink-800">Pemisahan dan Planet</p><p class="text-sm text-pink-700">Bintang kembar berpisah, material membentuk planet</p></div>
+            </div>
+        </div>
+
+        <h4 class="font-bold text-stone-800 mb-3">✅ Kelebihan:</h4>
+        <ul class="list-disc pl-5 text-stone-700 space-y-1 mb-4">
+            <li>Memperbaiki kelemahan teori pasang surut</li>
+            <li>Durasi interaksi lebih lama memungkinkan pembentukan planet yang lebih baik</li>
+            <li>Konsisten dengan observasi bintang kembar di alam semesta</li>
+        </ul>
+
+        <h4 class="font-bold text-stone-800 mb-3">❌ Kelemahan:</h4>
+        <ul class="list-disc pl-5 text-stone-700 space-y-1 mb-6">
+            <li>Masih ada pertanyaan tentang pemisahan bintang kembar</li>
+            <li>Jarang diterima oleh komunitas ilmuwan modern</li>
+        </ul>
+
+        <div class="flex justify-between"><button onclick="goToSection(6)" class="px-4 py-2 border border-stone-300 rounded-lg hover:bg-stone-50">← Sebelumnya</button><button onclick="goToSection(8)" class="px-4 py-2 bg-stone-900 text-white rounded-lg hover:bg-stone-700">Kuis →</button></div>
+    </div>`;
+
+    if(id===8) html = `<div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-bold mb-2">❓ Quiz Pembentukan Bumi</h2>
+        <p class="text-stone-600 mb-6">Uji pemahamanmu tentang materi pembentukan bumi!</p>
+        
+        <div id="quiz-container">
+            <div class="quiz-question mb-6" data-question="0">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-stone-800">Pertanyaan 1</h3>
+                    <span class="text-xs bg-stone-100 px-2 py-1 rounded">1/5</span>
+                </div>
+                <p class="mb-4 text-stone-700"><strong>Berapa perkiraan usia Bumi?</strong></p>
+                <div class="quiz-opt" onclick="selectAnswer(0, 'A')">A. 1 miliar tahun lalu</div>
+                <div class="quiz-opt" onclick="selectAnswer(0, 'B')">B. 4,6 miliar tahun lalu ✓</div>
+                <div class="quiz-opt" onclick="selectAnswer(0, 'C')">C. 10 miliar tahun lalu</div>
+                <div class="quiz-opt" onclick="selectAnswer(0, 'D')">D. 2 miliar tahun lalu</div>
+            </div>
+
+            <div class="quiz-question mb-6 hidden" data-question="1">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-stone-800">Pertanyaan 2</h3>
+                    <span class="text-xs bg-stone-100 px-2 py-1 rounded">2/5</span>
+                </div>
+                <p class="mb-4 text-stone-700"><strong>Teori apa yang paling banyak diterima ilmuwan?</strong></p>
+                <div class="quiz-opt" onclick="selectAnswer(1, 'A')">A. Teori Nebula ✓</div>
+                <div class="quiz-opt" onclick="selectAnswer(1, 'B')">B. Teori Pasang Surut</div>
+                <div class="quiz-opt" onclick="selectAnswer(1, 'C')">C. Teori Planetesimal</div>
+                <div class="quiz-opt" onclick="selectAnswer(1, 'D')">D. Teori Bintang Kembar</div>
+            </div>
+
+            <div class="quiz-question mb-6 hidden" data-question="2">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-stone-800">Pertanyaan 3</h3>
+                    <span class="text-xs bg-stone-100 px-2 py-1 rounded">3/5</span>
+                </div>
+                <p class="mb-4 text-stone-700"><strong>Apa itu planetesimal?</strong></p>
+                <div class="quiz-opt" onclick="selectAnswer(2, 'A')">A. Planet besar di Tata Surya</div>
+                <div class="quiz-opt" onclick="selectAnswer(2, 'B')">B. Benda-benda kecil penggabung planet ✓</div>
+                <div class="quiz-opt" onclick="selectAnswer(2, 'C')">C. Jenis bintang</div>
+                <div class="quiz-opt" onclick="selectAnswer(2, 'D')">D. Awan debu di angkasa</div>
+            </div>
+
+            <div class="quiz-question mb-6 hidden" data-question="3">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-stone-800">Pertanyaan 4</h3>
+                    <span class="text-xs bg-stone-100 px-2 py-1 rounded">4/5</span>
+                </div>
+                <p class="mb-4 text-stone-700"><strong>Siapa yang mengemukakan Teori Pasang Surut?</strong></p>
+                <div class="quiz-opt" onclick="selectAnswer(3, 'A')">A. Laplace</div>
+                <div class="quiz-opt" onclick="selectAnswer(3, 'B')">B. Moulton dan Chamberlain</div>
+                <div class="quiz-opt" onclick="selectAnswer(3, 'C')">C. Jeans dan Jeffreys ✓</div>
+                <div class="quiz-opt" onclick="selectAnswer(3, 'D')">D. Newton</div>
+            </div>
+
+            <div class="quiz-question mb-6 hidden" data-question="4">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-stone-800">Pertanyaan 5</h3>
+                    <span class="text-xs bg-stone-100 px-2 py-1 rounded">5/5</span>
+                </div>
+                <p class="mb-4 text-stone-700"><strong>Berapa persen permukaan Bumi adalah air?</strong></p>
+                <div class="quiz-opt" onclick="selectAnswer(4, 'A')">A. 50%</div>
+                <div class="quiz-opt" onclick="selectAnswer(4, 'B')">B. 70% ✓</div>
+                <div class="quiz-opt" onclick="selectAnswer(4, 'C')">C. 80%</div>
+                <div class="quiz-opt" onclick="selectAnswer(4, 'D')">D. 90%</div>
+            </div>
+
+            <div id="quiz-result" class="hidden">
+                <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-8 rounded-lg text-center">
+                    <h3 class="text-3xl font-bold mb-2">🎉 Quiz Selesai!</h3>
+                    <p class="text-lg mb-6">Skor Anda: <span id="final-score" class="text-4xl font-bold">0</span>/5</p>
+                    <div id="quiz-feedback" class="text-lg mb-6"></div>
+                    <button onclick="resetQuiz()" class="px-6 py-2 bg-white text-blue-600 rounded-lg font-medium hover:bg-stone-100 transition mr-2">Ulangi Quiz</button>
+                    <button onclick="goToSection(9)" class="px-6 py-2 bg-stone-900 text-white rounded-lg font-medium hover:bg-stone-700 transition">Lanjut ke Penutup</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-between mt-8">
+            <button onclick="goToSection(7)" class="px-4 py-2 border border-stone-300 rounded-lg hover:bg-stone-50">← Sebelumnya</button>
+        </div>
+    </div>`;
+
+    if(id===9) html = `<div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-bold mb-6">🏆 Penutup & Ringkasan</h2>
+        
+        <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-lg mb-8">
+            <h3 class="text-xl font-bold mb-2">✨ Selamat Menyelesaikan Modul Pembelajaran!</h3>
+            <p>Anda telah mempelajari semua materi tentang pembentukan Bumi dan teori-teorinya.</p>
+        </div>
+
+        <h3 class="font-bold text-lg mb-4">📚 Ringkasan Materi:</h3>
+        <div class="space-y-3 mb-8">
+            <div class="bg-blue-50 p-4 rounded border-l-4 border-blue-500">
+                <p class="font-semibold text-blue-800">🌍 Bumi</p>
+                <p class="text-sm text-blue-700">Planet ketiga dari Matahari yang menjadi rumah bagi jutaan makhluk hidup</p>
+            </div>
+            <div class="bg-green-50 p-4 rounded border-l-4 border-green-500">
+                <p class="font-semibold text-green-800">🌫️ Teori Nebula</p>
+                <p class="text-sm text-green-700">Teori paling diterima yang menjelaskan pembentukan Tata Surya dari awan debu dan gas</p>
+            </div>
+            <div class="bg-yellow-50 p-4 rounded border-l-4 border-yellow-500">
+                <p class="font-semibold text-yellow-800">☄️ Teori Planetesimal</p>
+                <p class="text-sm text-yellow-700">Teori yang menjelaskan planet terbentuk dari penggabungan benda-benda kecil</p>
+            </div>
+            <div class="bg-orange-50 p-4 rounded border-l-4 border-orange-500">
+                <p class="font-semibold text-orange-800">🌊 Teori Pasang Surut & Bintang Kembar</p>
+                <p class="text-sm text-orange-700">Teori alternatif yang melibatkan pengaruh gravitasi bintang lain</p>
+            </div>
+        </div>
+
+        <h3 class="font-bold text-lg mb-4">💡 Poin-Poin Penting:</h3>
+        <ul class="list-disc pl-5 text-stone-700 space-y-2 mb-8">
+            <li>Bumi terbentuk sekitar 4,6 miliar tahun yang lalu</li>
+            <li>70% permukaan Bumi adalah air yang mendukung kehidupan</li>
+            <li>Ada empat teori utama tentang pembentukan Bumi</li>
+            <li>Teori Nebula adalah yang paling diterima oleh ilmuwan modern</li>
+            <li>Setiap teori memiliki kelebihan dan kelemahan masing-masing</li>
+            <li>Bumi terus mengalami perubahan hingga saat ini</li>
+        </ul>
+
+        <h3 class="font-bold text-lg mb-4">🎯 Apa Selanjutnya?</h3>
+        <p class="text-stone-700 mb-6">Sekarang Anda memiliki pemahaman dasar tentang pembentukan Bumi. Anda dapat melanjutkan dengan mempelajari:</p>
+        <ul class="list-disc pl-5 text-stone-700 space-y-1 mb-8">
+            <li>Struktur internal Bumi yang lebih detail</li>
+            <li>Proses geologi dan transformasi kulit Bumi</li>
+            <li>Sejarah evolusi kehidupan di Bumi</li>
+            <li>Tantangan lingkungan modern</li>
+        </ul>
+
+        <div class="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
+            <p class="text-sm text-amber-800"><strong>📝 Catatan:</strong> Pengetahuan tentang pembentukan Bumi terus berkembang dengan penemuan-penemuan terbaru. Selalu update dengan riset terkini!</p>
+        </div>
+
+        <div class="flex justify-between"><button onclick="goToSection(0)" class="px-4 py-2 bg-stone-900 text-white rounded-lg hover:bg-stone-700">Kembali ke Awal</button><button onclick="goToSection(8)" class="px-4 py-2 border border-stone-300 rounded-lg hover:bg-stone-50">← Kembali ke Quiz</button></div>
+    </div>`;
+
+    c.innerHTML = html;
+    lucide.createIcons();
+}
+
+function selectAnswer(questionNum, answer) {
+    quizAnswers[questionNum] = answer;
+    const correctAnswers = {0: 'B', 1: 'A', 2: 'B', 3: 'C', 4: 'B'};
+    
+    // Mark the selected answer
+    const options = document.querySelectorAll(`.quiz-question[data-question="${questionNum}"] .quiz-opt`);
+    options.forEach(opt => {
+        opt.classList.remove('selected', 'correct', 'wrong');
+        if(opt.textContent.startsWith(answer)) {
+            if(answer === correctAnswers[questionNum]) {
+                opt.classList.add('correct');
+                if(!quizAnswers[questionNum + 100]) {
+                    quizScore++;
+                    quizAnswers[questionNum + 100] = true;
+                }
+            } else {
+                opt.classList.add('wrong');
+            }
+            opt.classList.add('selected');
+        }
+    });
+
+    // Show correct answer if wrong
+    if(answer !== correctAnswers[questionNum]) {
+        options.forEach(opt => {
+            if(opt.textContent.startsWith(correctAnswers[questionNum])) {
+                opt.classList.add('correct');
+            }
+        });
+    }
+
+    setTimeout(() => nextQuestion(questionNum), 1500);
+}
+
+function nextQuestion(currentQ) {
+    if(currentQ < 4) {
+        document.querySelectorAll('.quiz-question').forEach(q => q.classList.add('hidden'));
+        document.querySelector(`.quiz-question[data-question="${currentQ + 1}"]`).classList.remove('hidden');
+    } else {
+        document.getElementById('quiz-container').innerHTML = `
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-8 rounded-lg text-center">
+                <h3 class="text-3xl font-bold mb-2">🎉 Quiz Selesai!</h3>
+                <p class="text-lg mb-6">Skor Anda: <span class="text-4xl font-bold">${quizScore}</span>/5</p>
+                <div class="text-lg mb-6">
+                    ${quizScore === 5 ? '🌟 Sempurna! Anda menguasai semua materi!' : 
+                      quizScore >= 4 ? '🎯 Bagus! Hampir sempurna!' : 
+                      quizScore >= 3 ? '✅ Cukup baik! Pelajari kembali materi yang belum jelas.' :
+                      '📚 Silakan pelajari kembali materi dari awal.'}
+                </div>
+                <button onclick="resetQuiz()" class="px-6 py-2 bg-white text-blue-600 rounded-lg font-medium hover:bg-stone-100 transition mr-2">Ulangi Quiz</button>
+                <button onclick="goToSection(9)" class="px-6 py-2 bg-stone-900 text-white rounded-lg font-medium hover:bg-stone-700 transition">Lanjut ke Penutup</button>
+            </div>
+        `;
+    }
+}
+
+function resetQuiz() {
+    quizScore = 0;
+    quizAnswers = {};
+    goToSection(8);
+}
+
+// Initialize
+renderNav();
+renderSection(0);
+updateProgress();
+updatePipeline();
+updateStatus();
+</script>
+
+</body>
+</html>
